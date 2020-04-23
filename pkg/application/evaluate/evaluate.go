@@ -2,22 +2,22 @@ package evaluate
 
 import (
 	"github.com/phodal/coca/pkg/application/evaluate/evaluator"
-	"github.com/phodal/coca/pkg/domain"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 )
 
 type Evaluator interface {
-	Evaluate(result *evaluator.EvaluateModel, node domain.JClassNode)
-	EvaluateList(evaluateModel *evaluator.EvaluateModel, nodes []domain.JClassNode, nodeMap map[string]domain.JClassNode, identifiers []domain.JIdentifier)
+	Evaluate(result *evaluator.EvaluateModel, node core_domain.CodeDataStruct)
+	EvaluateList(evaluateModel *evaluator.EvaluateModel, nodes []core_domain.CodeDataStruct, nodeMap map[string]core_domain.CodeDataStruct, identifiers []core_domain.CodeDataStruct)
 }
 
 type Evaluation struct {
 	Evaluator Evaluator
 }
 
-func (o *Evaluation) Evaluate(result *evaluator.EvaluateModel, node domain.JClassNode) {
+func (o *Evaluation) Evaluate(result *evaluator.EvaluateModel, node core_domain.CodeDataStruct) {
 	o.Evaluator.Evaluate(result, node)
 }
 
-func (o *Evaluation) EvaluateList(evaluateModel *evaluator.EvaluateModel, nodes []domain.JClassNode, nodeMap map[string]domain.JClassNode, identifiers []domain.JIdentifier) {
+func (o *Evaluation) EvaluateList(evaluateModel *evaluator.EvaluateModel, nodes []core_domain.CodeDataStruct, nodeMap map[string]core_domain.CodeDataStruct, identifiers []core_domain.CodeDataStruct) {
 	o.Evaluator.EvaluateList(evaluateModel, nodes, nodeMap, identifiers)
 }

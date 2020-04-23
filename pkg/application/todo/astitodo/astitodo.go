@@ -12,7 +12,7 @@ type TODO struct {
 	Assignee string
 	Filename string
 	Line     int
-	Message  []string
+	Message  string
 }
 
 var (
@@ -24,7 +24,8 @@ func ParseComment(token antlr.Token, filename string) *TODO {
 	comment := token.GetText()
 
 	var t = strings.TrimSpace(comment)
-	if strings.HasPrefix(t, "//") || strings.HasPrefix(t, "/*") || strings.HasPrefix(t, "*/") {
+	// todo: add todo list
+	if strings.HasPrefix(t, "//") || strings.HasPrefix(t, "/*") || strings.HasPrefix(t, "*/") || strings.HasPrefix(t, "#") {
 		t = strings.TrimSpace(t[2:])
 	}
 
@@ -47,12 +48,20 @@ func ParseComment(token antlr.Token, filename string) *TODO {
 		}
 
 		// Append text
-		todo.Message = append(todo.Message, t)
+		todo.Message = handleForMultipleLine(t)
 
 		return todo
 	}
 
 	return nil
+}
+
+// todo: handle for letter
+func handleForMultipleLine(t string) string {
+	t = strings.ReplaceAll(t, "*/", " ")
+	t = strings.ReplaceAll(t, "*", " ")
+	t = strings.ReplaceAll(t, "\n", " ")
+	return t
 }
 
 func IsTodoIdentifier(s string) (int, bool) {

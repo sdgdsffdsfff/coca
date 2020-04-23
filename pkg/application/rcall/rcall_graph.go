@@ -2,7 +2,7 @@ package rcall
 
 import (
 	"github.com/phodal/coca/pkg/application/call"
-	"github.com/phodal/coca/pkg/domain"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 )
 
 type RCallGraph struct {
@@ -12,7 +12,7 @@ func NewRCallGraph() RCallGraph {
 	return RCallGraph{}
 }
 
-func (c RCallGraph) Analysis(funcName string, clzs []domain.JClassNode, writeCallback func(rcallMap map[string][]string)) string {
+func (c RCallGraph) Analysis(funcName string, clzs []core_domain.CodeDataStruct, writeCallback func(rcallMap map[string][]string)) string {
 	var projectMethodMap = BuildProjectMethodMap(clzs)
 	rcallMap := BuildRCallMethodMap(clzs, projectMethodMap)
 
@@ -26,10 +26,10 @@ func (c RCallGraph) Analysis(funcName string, clzs []domain.JClassNode, writeCal
 	return dotContent
 }
 
-func BuildProjectMethodMap(clzs []domain.JClassNode) map[string]int {
+func BuildProjectMethodMap(clzs []core_domain.CodeDataStruct) map[string]int {
 	var maps = make(map[string]int)
 	for _, clz := range clzs {
-		for _, method := range clz.Methods {
+		for _, method := range clz.Functions {
 			maps[method.BuildFullMethodName(clz)] = 1
 		}
 	}
@@ -37,13 +37,13 @@ func BuildProjectMethodMap(clzs []domain.JClassNode) map[string]int {
 	return maps
 }
 
-func BuildRCallMethodMap(parserDeps []domain.JClassNode, projectMaps map[string]int) map[string][]string {
+func BuildRCallMethodMap(parserDeps []core_domain.CodeDataStruct, projectMaps map[string]int) map[string][]string {
 	var methodMap = make(map[string][]string)
 	for _, clz := range parserDeps {
-		for _, method := range clz.Methods {
+		for _, method := range clz.Functions {
 			var caller = method.BuildFullMethodName(clz)
-			for _, jMethodCall := range method.MethodCalls {
-				if jMethodCall.Class != "" {
+			for _, jMethodCall := range method.FunctionCalls {
+				if jMethodCall.NodeName != "" {
 					callee := jMethodCall.BuildFullMethodName()
 					if projectMaps[callee] < 1 {
 						continue

@@ -1,46 +1,24 @@
 package bs_domain
 
 import (
-	"strings"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 )
 
-type BsJClass struct {
-	Package     string
-	Class       string
-	Type        string
-	Path        string
-	Extends     string
-	Implements  []string
-	Methods     []BsJMethod
-	MethodCalls []BsJMethodCall
-	ClassBS     ClassBadSmellInfo
+type BSDataStruct struct {
+	core_domain.CodeDataStruct
+
+	Functions    []BSFunction
+	DataStructBS ClassBadSmellInfo
 }
 
-type BsJMethodCall struct {
-	Package           string
-	Type              string
-	Class             string
-	MethodName        string
-	StartLine         int
-	StartLinePosition int
-	StopLine          int
-	StopLinePosition  int
+type BSFunction struct {
+	core_domain.CodeFunction
+
+	FunctionBody string
+	FunctionBS   FunctionBSInfo
 }
 
-type BsJMethod struct {
-	Name              string
-	Type              string
-	StartLine         int
-	StartLinePosition int
-	StopLine          int
-	StopLinePosition  int
-	MethodBody        string
-	Modifier          string
-	Parameters        []JFullParameter
-	MethodBs          MethodBadSmellInfo
-}
-
-type MethodBadSmellInfo struct {
+type FunctionBSInfo struct {
 	IfSize     int
 	SwitchSize int
 	IfInfo     []IfParInfo
@@ -58,8 +36,8 @@ func NewIfPairInfo() IfParInfo {
 	}
 }
 
-func NewMethodBadSmellInfo() MethodBadSmellInfo {
-	return MethodBadSmellInfo{
+func NewMethodBadSmellInfo() FunctionBSInfo {
+	return FunctionBSInfo{
 		IfSize:     0,
 		SwitchSize: 0,
 		IfInfo:     nil,
@@ -71,44 +49,48 @@ type ClassBadSmellInfo struct {
 	PublicVarSize int
 }
 
-type JFullParameter struct {
-	Name string
-	Type string
+func NewJFullClassNode() BSDataStruct {
+	info := ClassBadSmellInfo{0, 0}
+	return BSDataStruct{
+		DataStructBS: info,
+	}
 }
 
-func NewJFullClassNode() BsJClass {
-	info := &ClassBadSmellInfo{0, 0}
-	return BsJClass{
-		"",
-		"",
-		"",
-		"",
-		"",
-		nil,
-		nil,
-		nil,
-		*info}
-}
-
-func (b *BsJMethod) IsGetterSetter() bool {
-	return strings.HasPrefix(b.Name, "set") || strings.HasPrefix(b.Name, "get")
-}
-
-func (b *BsJClass) HaveCallParent() bool {
-	hasCallParentMethod := false
-	for _, methodCall := range b.MethodCalls {
-		if methodCall.Class == b.Extends {
-			hasCallParentMethod = true
+func (b *BSDataStruct) HasCallSuper() bool {
+	hasCallSuperMethod := false
+	for _, methodCall := range b.FunctionCalls {
+		if methodCall.NodeName == b.Extend {
+			hasCallSuperMethod = true
 		}
 	}
-	return hasCallParentMethod
+
+	return hasCallSuperMethod
 }
 
-func (b *BsJClass) ClassFullName() string {
-	return b.Package + "." + b.Class
+//fixme java lambda & recursive
+func GetCalledClasses(class BSDataStruct, maps map[string]bool) []string {
+	var calledClassesMap = make(map[string]struct{})
+	var calledClasses []string
+	for _, methodCalled := range class.FunctionCalls {
+		if methodCalled.NodeName == "" || !maps[methodCalled.BuildClassFullName()] || class.GetClassFullName() == methodCalled.BuildClassFullName() {
+			continue
+		}
+		calledClassesMap[methodCalled.BuildClassFullName()] = struct{}{}
+	}
+	for key := range calledClassesMap {
+		calledClasses = append(calledClasses, key)
+	}
+
+	return calledClasses
 }
 
-func (c *BsJMethodCall) ClassFullName() string {
-	return c.Package + "." + c.Class
-}
+func WithoutGetterSetterClass(fullMethods []BSFunction) int {
+	var normalMethodSize = 0
+	for _, method := range fullMethods {
+		if !(method.IsGetterSetter()) {
+			normalMethodSize++
+		}
+	}
 
+	return normalMethodSize
+}

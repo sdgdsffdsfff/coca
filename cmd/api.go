@@ -6,7 +6,8 @@ import (
 	"github.com/phodal/coca/cmd/config"
 	"github.com/phodal/coca/pkg/application/api"
 	"github.com/phodal/coca/pkg/application/call"
-	"github.com/phodal/coca/pkg/domain"
+	api_domain2 "github.com/phodal/coca/pkg/domain/api_domain"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 	"github.com/spf13/cobra"
 	"log"
 	"path/filepath"
@@ -26,12 +27,11 @@ type ApiCmdConfig struct {
 }
 
 var (
-	apiCmdConfig ApiCmdConfig
-	restApis     []domain.RestAPI
-
-	identifiers    = cmd_util.LoadIdentify(apiCmdConfig.DependencePath)
-	identifiersMap = domain.BuildIdentifierMap(identifiers)
-	diMap          = domain.BuildDIMap(identifiers, identifiersMap)
+	apiCmdConfig   ApiCmdConfig
+	restApis       []api_domain2.RestAPI
+	identifiers    []core_domain.CodeDataStruct
+	identifiersMap map[string]core_domain.CodeDataStruct
+	diMap          map[string]string
 )
 
 var apiCmd = &cobra.Command{
@@ -39,6 +39,10 @@ var apiCmd = &cobra.Command{
 	Short: "scan HTTP api from annotation",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
+		identifiers = cmd_util.LoadIdentify(apiCmdConfig.DependencePath)
+		identifiersMap = core_domain.BuildIdentifierMap(identifiers)
+		diMap = core_domain.BuildDIMap(identifiers, identifiersMap)
+
 		depPath := apiCmdConfig.DependencePath
 		apiPrefix := apiCmdConfig.AggregateApi
 
@@ -62,13 +66,13 @@ var apiCmd = &cobra.Command{
 
 		parsedDeps := cmd_util.GetDepsFromJson(depPath)
 
-		filterAPIs := domain.FilterApiByPrefix(apiPrefix, restApis)
+		filterAPIs := api_domain2.FilterApiByPrefix(apiPrefix, restApis)
 
 		analyser := call.NewCallGraph()
 		dotContent, counts := analyser.AnalysisByFiles(filterAPIs, parsedDeps, diMap)
 
 		if apiCmdConfig.Sort {
-			domain.SortAPIs(counts)
+			api_domain2.SortAPIs(counts)
 		}
 
 		if apiCmdConfig.ShowCount {
@@ -118,7 +122,7 @@ func init() {
 
 	apiCmd.PersistentFlags().StringVarP(&apiCmdConfig.Path, "path", "p", ".", "path")
 	apiCmd.PersistentFlags().StringVarP(&apiCmdConfig.DependencePath, "dependence", "d", config.CocaConfig.ReporterPath+"/deps.json", "get dependence file")
-	apiCmd.PersistentFlags().StringVarP(&apiCmdConfig.RemovePackageNames, "remove", "r", "", "remove package Name")
+	apiCmd.PersistentFlags().StringVarP(&apiCmdConfig.RemovePackageNames, "remove", "r", "", "remove package ParamName")
 	apiCmd.PersistentFlags().BoolVarP(&apiCmdConfig.ShowCount, "count", "c", false, "count api size")
 	apiCmd.PersistentFlags().BoolVarP(&apiCmdConfig.ForceUpdate, "force", "f", false, "force api update")
 	apiCmd.PersistentFlags().BoolVarP(&apiCmdConfig.Sort, "sort", "s", false, "sort api")

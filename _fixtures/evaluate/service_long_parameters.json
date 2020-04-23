@@ -1,7 +1,7 @@
 [
   {
     "Package": "com.phodal.pholedge.book",
-    "Class": "BookService",
+    "NodeName": "BookService",
     "Type": "Class",
     "Path": "examples/api/BookService.java",
     "Fields": [
@@ -14,7 +14,7 @@
         "Value": "bookRepository"
       }
     ],
-    "Methods": [
+    "Functions": [
       {
         "Name": "updateA",
         "Type": "BookA",
@@ -24,24 +24,24 @@
         "StopLinePosition": 40,
         "Parameters": [
           {
-            "Name": "String",
-            "Type": "firstname"
+            "TypeType": "String",
+            "TypeValue": "firstname"
           },
           {
-            "Name": "String",
-            "Type": "lastname"
+            "TypeType": "String",
+            "TypeValue": "lastname"
           },
           {
-            "Name": "String",
-            "Type": "address"
+            "TypeType": "String",
+            "TypeValue": "address"
           },
           {
-            "Name": "String",
-            "Type": "age"
+            "TypeType": "String",
+            "TypeValue": "age"
           },
           {
-            "Name": "String",
-            "Type": "id"
+            "TypeType": "String",
+            "TypeValue": "id"
           }
         ],
         "MethodCalls": [],
@@ -50,7 +50,6 @@
       }
     ],
     "MethodCalls": [
-
     ],
     "Extend": "",
     "Implements": [
@@ -59,7 +58,7 @@
   },
   {
     "Package": "com.phodal.pholedge.book.model",
-    "Class": "BookBService",
+    "NodeName": "BookBService",
     "Type": "Class",
     "Path": "examples/api/model/BookRepresentaion.java",
     "Fields": [
@@ -72,7 +71,7 @@
         "Value": "name"
       }
     ],
-    "Methods": [
+    "Functions": [
       {
         "Name": "updateB",
         "Type": "BookB",
@@ -82,24 +81,24 @@
         "StopLinePosition": 40,
         "Parameters": [
           {
-            "Name": "String",
-            "Type": "name"
+            "TypeType": "String",
+            "TypeValue": "name"
           },
           {
-            "Name": "String",
-            "Type": "firstname"
+            "TypeType": "String",
+            "TypeValue": "firstname"
           },
           {
-            "Name": "String",
-            "Type": "lastname"
+            "TypeType": "String",
+            "TypeValue": "lastname"
           },
           {
-            "Name": "String",
-            "Type": "address"
+            "TypeType": "String",
+            "TypeValue": "address"
           },
           {
-            "Name": "String",
-            "Type": "age"
+            "TypeType": "String",
+            "TypeValue": "age"
           }
         ],
         "MethodCalls": [],
@@ -113,7 +112,7 @@
   },
   {
     "Package": "com.phodal.pholedge.book.model",
-    "Class": "BookCService",
+    "NodeName": "BookCService",
     "Type": "Class",
     "Path": "examples/api/model/BookRepresentaion.java",
     "Fields": [
@@ -126,7 +125,7 @@
         "Value": "name"
       }
     ],
-    "Methods": [
+    "Functions": [
       {
         "Name": "doUpdate",
         "Type": "String",
@@ -136,7 +135,7 @@
         "StopLinePosition": 40,
         "Parameters": [
           {
-            "Name": "String",
+            "TypeType": "String",
             "Type": "age"
           }
         ],

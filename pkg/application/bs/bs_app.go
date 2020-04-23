@@ -13,15 +13,25 @@ var (
 	BS_LARGE_LENGTH      = 20
 	BS_METHOD_LENGTH     = 30
 	BS_IF_LINES_LENGTH   = 3
+
+	SMELL_GARPH_CONNECTED_CALL = "graphConnectedCall"
+	SMELL_LAZY_ELEMENT         = "lazyElement"
+	SMELL_LONG_METHOD          = "longMethod"
+	SMELL_DATA_CLASS           = "dataClass"
+	SMELL_REFUSED_BEQUEST      = "refusedBequest"
+	SMELL_LARGE_CLASS          = "largeClass"
+	SMELL_COMPLEX_CONDITION    = "complexCondition"
+	SMELL_REPEATED_SWITCHES    = "repeatedSwitches"
+	SMELL_LONG_PARAMETER_LIST  = "longParameterList"
 )
 
-func AnalysisBadSmell(nodes []bs_domain.BsJClass) []bs_domain.BadSmellModel {
+func AnalysisBadSmell(nodes []bs_domain.BSDataStruct) []bs_domain.BadSmellModel {
 	var badSmellList []bs_domain.BadSmellModel
 	for _, node := range nodes {
 		checkLazyElement(node, &badSmellList)
 
 		onlyHaveGetterAndSetter := true
-		for _, method := range node.Methods {
+		for _, method := range node.Functions {
 			checkLongMethod(method, node, &badSmellList)
 
 			if !(method.IsGetterSetter()) {
@@ -41,114 +51,87 @@ func AnalysisBadSmell(nodes []bs_domain.BsJClass) []bs_domain.BadSmellModel {
 	return badSmellList
 }
 
-func checkConnectedGraphCall(nodes []bs_domain.BsJClass, badSmellList *[]bs_domain.BadSmellModel) {
+func checkConnectedGraphCall(nodes []bs_domain.BSDataStruct, badSmellList *[]bs_domain.BadSmellModel) {
 	var classNodes = map[string][]string{}
 	var classNodeMaps = map[string]bool{}
 	for _, node := range nodes {
-		classNodeMaps[node.ClassFullName()] = true
+		classNodeMaps[node.GetClassFullName()] = true
 	}
 	for _, node := range nodes {
-		classNodes[node.ClassFullName()] = getCalledClasses(node, classNodeMaps)
+		classNodes[node.GetClassFullName()] = bs_domain.GetCalledClasses(node, classNodeMaps)
 	}
 	var badSmellGraphCall = graphcall.NewBadSmellGraphCall()
 	var descriptions = badSmellGraphCall.AnalysisGraphCallPath(classNodes)
 	for _, description := range descriptions {
-		*badSmellList = append(*badSmellList, bs_domain.BadSmellModel{Bs: "graphConnectedCall", Description: description})
+		*badSmellList = append(*badSmellList, bs_domain.BadSmellModel{Bs: SMELL_GARPH_CONNECTED_CALL, Description: description})
 	}
 }
 
-//fixme java lamda & recursive
-func getCalledClasses(class bs_domain.BsJClass, maps map[string]bool) []string {
-	var calledClassesMap = make(map[string]struct{})
-	var calledClasses []string
-	for _, methodCalled := range class.MethodCalls {
-		if methodCalled.Class == "" || !maps[methodCalled.ClassFullName()] || class.ClassFullName() == methodCalled.ClassFullName() {
-			continue
-		}
-		calledClassesMap[methodCalled.ClassFullName()] = struct{}{}
-	}
-	for key := range calledClassesMap {
-		calledClasses = append(calledClasses, key)
-	}
-	return calledClasses
-}
-
-func checkLazyElement(node bs_domain.BsJClass, badSmellList *[]bs_domain.BadSmellModel) {
-	if node.Type == "Class" && len(node.Methods) < 1 {
-		*badSmellList = append(*badSmellList, bs_domain.BadSmellModel{File: node.Path, Bs: "lazyElement"})
+func checkLazyElement(node bs_domain.BSDataStruct, badSmellList *[]bs_domain.BadSmellModel) {
+	if node.Type == "Class" && len(node.Functions) < 1 {
+		*badSmellList = append(*badSmellList, bs_domain.BadSmellModel{File: node.FilePath, Bs: SMELL_LAZY_ELEMENT})
 	}
 }
 
-func checkLongMethod(method bs_domain.BsJMethod, node bs_domain.BsJClass, badSmellList *[]bs_domain.BadSmellModel) {
-	methodLength := method.StopLine - method.StartLine
+func checkLongMethod(method bs_domain.BSFunction, node bs_domain.BSDataStruct, badSmellList *[]bs_domain.BadSmellModel) {
+	methodLength := method.Position.StopLine - method.Position.StartLine
 
 	if methodLength > BS_METHOD_LENGTH {
 		description := "method length: " + strconv.Itoa(methodLength)
-		longMethod := &bs_domain.BadSmellModel{File: node.Path, Line: strconv.Itoa(method.StartLine), Bs: "longMethod", Description: description, Size: methodLength}
-		*badSmellList = append(*badSmellList, *longMethod)
+		longMethod := bs_domain.BadSmellModel{File: node.FilePath, Line: strconv.Itoa(method.Position.StartLine), Bs: SMELL_LONG_METHOD, Description: description, Size: methodLength}
+		*badSmellList = append(*badSmellList, longMethod)
 	}
 }
 
-func checkDataClass(onlyHaveGetterAndSetter bool, node bs_domain.BsJClass, badSmellList *[]bs_domain.BadSmellModel) {
-	if onlyHaveGetterAndSetter && node.Type == "Class" && len(node.Methods) > 0 {
-		dataClass := &bs_domain.BadSmellModel{File: node.Path, Bs: "dataClass", Size: len(node.Methods)}
-		*badSmellList = append(*badSmellList, *dataClass)
+func checkDataClass(onlyHaveGetterAndSetter bool, node bs_domain.BSDataStruct, badSmellList *[]bs_domain.BadSmellModel) {
+	if onlyHaveGetterAndSetter && node.Type == "Class" && len(node.Functions) > 0 {
+		dataClass := bs_domain.BadSmellModel{File: node.FilePath, Bs: SMELL_DATA_CLASS, Size: len(node.Functions)}
+		*badSmellList = append(*badSmellList, dataClass)
 	}
 }
 
-func checkRefusedBequest(node bs_domain.BsJClass, badSmellList *[]bs_domain.BadSmellModel) {
-	if node.Extends != "" {
-		if node.HaveCallParent() {
-			*badSmellList = append(*badSmellList, bs_domain.BadSmellModel{File: node.Path, Bs: "refusedBequest"})
+func checkRefusedBequest(node bs_domain.BSDataStruct, badSmellList *[]bs_domain.BadSmellModel) {
+	if node.Extend != "" {
+		if node.HasCallSuper() {
+			*badSmellList = append(*badSmellList, bs_domain.BadSmellModel{File: node.FilePath, Bs: SMELL_REFUSED_BEQUEST})
 		}
 	}
 }
 
-func checkLargeClass(node bs_domain.BsJClass, badSmellList *[]bs_domain.BadSmellModel) {
-	normalClassLength := withOutGetterSetterClass(node.Methods)
+func checkLargeClass(node bs_domain.BSDataStruct, badSmellList *[]bs_domain.BadSmellModel) {
+	normalClassLength := bs_domain.WithoutGetterSetterClass(node.Functions)
 	if node.Type == "Class" && normalClassLength >= BS_LARGE_LENGTH {
 		description := "methods number (without getter/setter): " + strconv.Itoa(normalClassLength)
-		*badSmellList = append(*badSmellList, bs_domain.BadSmellModel{File: node.Path, Bs: "largeClass", Description: description, Size: normalClassLength})
+		*badSmellList = append(*badSmellList, bs_domain.BadSmellModel{File: node.FilePath, Bs: SMELL_LARGE_CLASS, Description: description, Size: normalClassLength})
 	}
 }
 
-func checkComplexIf(method bs_domain.BsJMethod, node bs_domain.BsJClass, badSmellList *[]bs_domain.BadSmellModel) {
-	for _, info := range method.MethodBs.IfInfo {
+func checkComplexIf(method bs_domain.BSFunction, node bs_domain.BSDataStruct, badSmellList *[]bs_domain.BadSmellModel) {
+	for _, info := range method.FunctionBS.IfInfo {
 		if info.EndLine-info.StartLine >= BS_IF_LINES_LENGTH {
-			longParams := &bs_domain.BadSmellModel{File: node.Path, Line: strconv.Itoa(info.StartLine), Bs: "complexCondition", Description: "complexCondition"}
-			*badSmellList = append(*badSmellList, *longParams)
+			longParams := bs_domain.BadSmellModel{File: node.FilePath, Line: strconv.Itoa(info.StartLine), Bs: SMELL_COMPLEX_CONDITION, Description: SMELL_COMPLEX_CONDITION}
+			*badSmellList = append(*badSmellList, longParams)
 		}
 	}
 }
 
-func checkRepeatedSwitches(method bs_domain.BsJMethod, node bs_domain.BsJClass, badSmellList *[]bs_domain.BadSmellModel) {
-	if method.MethodBs.IfSize >= BS_IF_SWITCH_LENGTH {
-		longParams := &bs_domain.BadSmellModel{File: node.Path, Line: strconv.Itoa(method.StartLine), Bs: "repeatedSwitches", Description: "ifSize", Size: method.MethodBs.IfSize}
-		*badSmellList = append(*badSmellList, *longParams)
+func checkRepeatedSwitches(method bs_domain.BSFunction, node bs_domain.BSDataStruct, badSmellList *[]bs_domain.BadSmellModel) {
+	if method.FunctionBS.IfSize >= BS_IF_SWITCH_LENGTH {
+		longParams := bs_domain.BadSmellModel{File: node.FilePath, Line: strconv.Itoa(method.Position.StartLine), Bs: SMELL_REPEATED_SWITCHES, Description: "ifSize", Size: method.FunctionBS.IfSize}
+		*badSmellList = append(*badSmellList, longParams)
 	}
 
-	if method.MethodBs.SwitchSize >= BS_IF_SWITCH_LENGTH {
-		longParams := &bs_domain.BadSmellModel{File: node.Path, Line: strconv.Itoa(method.StartLine), Bs: "repeatedSwitches", Description: "switchSize", Size: method.MethodBs.SwitchSize}
-		*badSmellList = append(*badSmellList, *longParams)
+	if method.FunctionBS.SwitchSize >= BS_IF_SWITCH_LENGTH {
+		longParams := bs_domain.BadSmellModel{File: node.FilePath, Line: strconv.Itoa(method.Position.StartLine), Bs: SMELL_REPEATED_SWITCHES, Description: "switchSize", Size: method.FunctionBS.SwitchSize}
+		*badSmellList = append(*badSmellList, longParams)
 	}
 }
 
-func checkLongParameterList(method bs_domain.BsJMethod, node bs_domain.BsJClass, badSmellList *[]bs_domain.BadSmellModel) {
+func checkLongParameterList(method bs_domain.BSFunction, node bs_domain.BSDataStruct, badSmellList *[]bs_domain.BadSmellModel) {
 	if len(method.Parameters) > BS_LONG_PARAS_LENGTH {
 		paramsJson, _ := json.Marshal(method.Parameters)
 		str := string(paramsJson[:])
-		longParams := &bs_domain.BadSmellModel{File: node.Path, Line: strconv.Itoa(method.StartLine), Bs: "longParameterList", Description: str, Size: len(method.Parameters)}
-		*badSmellList = append(*badSmellList, *longParams)
+		longParams := bs_domain.BadSmellModel{File: node.FilePath, Line: strconv.Itoa(method.Position.StartLine), Bs: SMELL_LONG_PARAMETER_LIST, Description: str, Size: len(method.Parameters)}
+		*badSmellList = append(*badSmellList, longParams)
 	}
-}
-
-func withOutGetterSetterClass(fullMethods []bs_domain.BsJMethod) int {
-	var normalMethodSize = 0
-	for _, method := range fullMethods {
-		if !(method.IsGetterSetter()) {
-			normalMethodSize++
-		}
-	}
-
-	return normalMethodSize
 }

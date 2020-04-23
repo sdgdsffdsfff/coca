@@ -17,6 +17,12 @@ Refactoring Modeling:
 
 ![Refactoring Modeling](docs/images/model.svg)
 
+ - [ ] Languages Support
+    - [x] Java (full features)
+    - [x] Golang (support: analysis, todo, concept, git, suggest)
+    - [x] TypeScript (antlr4 performance issue)
+    - [x] Python (support: analysis, todo, concept, git, suggest)
+
 Features List:
 
 ```
@@ -470,7 +476,7 @@ results:
 +---------------------------+----------------------------------------+---------+
 ```
 
-## Todo
+## Roadmap
 
  - bad smell support
    - [x] sort method size
@@ -549,11 +555,10 @@ results:
     - [x] Groovy Support
       - [x] migrate to Golang Styles
  - [ ] Story Cmd
- - [ ] Languages Support
-    - [x] Java
-    - [ ] Golang (ongoing)
-    - [ ] TypeScript (ongoing)
-    - [ ] Python
+ - [ ] Clean Code Suggest
+    - [ ] JavaScript Version [clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)
+ - [ ] More CodeSmells
+    - [ ] Source [DesigniteJava](https://github.com/tushartushar/DesigniteJava)
 
 Documents Todo:
 

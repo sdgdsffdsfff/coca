@@ -1,7 +1,7 @@
 [
   {
     "Package": "com.phodal.pholedge.book",
-    "Class": "BookService",
+    "NodeName": "BookService",
     "Type": "Class",
     "Path": "examples/api/BookService.java",
     "Fields": [
@@ -14,7 +14,7 @@
         "Value": "bookRepository"
       }
     ],
-    "Methods": [
+    "Functions": [
       {
         "Name": "doSave",
         "Type": "List\u003cBookRepresentaion\u003e",
@@ -27,8 +27,8 @@
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "same package",
-            "Class": "BookRepository",
-            "MethodName": "list",
+            "NodeName": "BookRepository",
+            "FunctionName": "list",
             "StartLine": 32,
             "StartLinePosition": 30,
             "StopLine": 32,

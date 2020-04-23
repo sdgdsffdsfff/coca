@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/phodal/coca/cmd/cmd_util"
 	"github.com/phodal/coca/pkg/adapter/cocafile"
-	"github.com/phodal/coca/pkg/application/analysis"
+	"github.com/phodal/coca/pkg/application/analysis/javaapp"
 	"github.com/phodal/coca/pkg/application/tbs"
-	"github.com/phodal/coca/pkg/domain"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 	"github.com/spf13/cobra"
 	"strconv"
 )
@@ -29,15 +29,10 @@ var tbsCmd = &cobra.Command{
 		files := cocafile.GetJavaTestFiles(tbsCmdConfig.Path)
 
 		identifiers := cmd_util.LoadTestIdentify(files)
-		identifiersMap := domain.BuildIdentifierMap(identifiers)
+		identifiersMap := core_domain.BuildIdentifierMap(identifiers)
 
-		var classes []string = nil
-		for _, node := range identifiers {
-			classes = append(classes, node.Package+"."+node.ClassName)
-		}
-
-		analysisApp := analysis.NewJavaFullApp()
-		classNodes := analysisApp.AnalysisFiles(identifiers, files, classes)
+		analysisApp := javaapp.NewJavaFullApp()
+		classNodes := analysisApp.AnalysisFiles(identifiers, files)
 
 		nodeContent, _ := json.MarshalIndent(classNodes, "", "\t")
 		cmd_util.WriteToCocaFile("tdeps.json", string(nodeContent))

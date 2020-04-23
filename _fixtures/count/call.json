@@ -1,7 +1,7 @@
 [
   {
     "Package": "com.phodal.pholedge.book",
-    "Class": "BookController",
+    "NodeName": "BookController",
     "Type": "Class",
     "Path": "examples/api/BookController.java",
     "Fields": [
@@ -10,7 +10,7 @@
         "Value": "applicationService"
       }
     ],
-    "Methods": [
+    "Functions": [
       {
         "Name": "BookController",
         "Type": "",
@@ -24,7 +24,7 @@
             "Type": "BookService"
           }
         ],
-        "MethodCalls": null,
+        "FunctionCalls": null,
         "Override": false,
         "Annotations": null,
         "IsConstructor": true
@@ -42,12 +42,12 @@
             "Type": "CreateBookCommand"
           }
         ],
-        "MethodCalls": [
+        "FunctionCalls": [
           {
             "Package": "com.google.common.collect.ImmutableSortedMap.of",
             "Type": "",
-            "Class": "",
-            "MethodName": "of",
+            "NodeName": "",
+            "FunctionName": "of",
             "StartLine": 27,
             "StartLinePosition": 15,
             "StopLine": 27,
@@ -56,8 +56,8 @@
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "",
-            "Class": "BookService",
-            "MethodName": "createBook",
+            "NodeName": "BookService",
+            "FunctionName": "createBook",
             "StartLine": 27,
             "StartLinePosition": 43,
             "StopLine": 27,
@@ -85,12 +85,12 @@
             "Type": "UpdateBookCommand"
           }
         ],
-        "MethodCalls": [
+        "FunctionCalls": [
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "",
-            "Class": "BookService",
-            "MethodName": "updateBook",
+            "NodeName": "BookService",
+            "FunctionName": "updateBook",
             "StartLine": 33,
             "StartLinePosition": 34,
             "StopLine": 33,
@@ -109,12 +109,12 @@
         "StopLine": 39,
         "StopLinePosition": 46,
         "Parameters": null,
-        "MethodCalls": [
+        "FunctionCalls": [
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "",
-            "Class": "BookService",
-            "MethodName": "getBooksLists",
+            "NodeName": "BookService",
+            "FunctionName": "getBooksLists",
             "StartLine": 38,
             "StartLinePosition": 34,
             "StopLine": 38,
@@ -138,12 +138,12 @@
             "Type": "String"
           }
         ],
-        "MethodCalls": [
+        "FunctionCalls": [
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "",
-            "Class": "BookService",
-            "MethodName": "getBookById",
+            "NodeName": "BookService",
+            "FunctionName": "getBookById",
             "StartLine": 43,
             "StartLinePosition": 34,
             "StopLine": 43,
@@ -155,12 +155,12 @@
         "IsConstructor": false
       }
     ],
-    "MethodCalls": [
+    "FunctionCalls": [
       {
         "Package": "com.google.common.collect.ImmutableSortedMap.of",
         "Type": "",
-        "Class": "",
-        "MethodName": "of",
+        "NodeName": "",
+        "FunctionName": "of",
         "StartLine": 27,
         "StartLinePosition": 15,
         "StopLine": 27,
@@ -169,8 +169,8 @@
       {
         "Package": "com.phodal.pholedge.book",
         "Type": "",
-        "Class": "BookService",
-        "MethodName": "createBook",
+        "NodeName": "BookService",
+        "FunctionName": "createBook",
         "StartLine": 27,
         "StartLinePosition": 43,
         "StopLine": 27,
@@ -179,8 +179,8 @@
       {
         "Package": "com.phodal.pholedge.book",
         "Type": "",
-        "Class": "BookService",
-        "MethodName": "updateBook",
+        "NodeName": "BookService",
+        "FunctionName": "updateBook",
         "StartLine": 33,
         "StartLinePosition": 34,
         "StopLine": 33,
@@ -189,8 +189,8 @@
       {
         "Package": "com.phodal.pholedge.book",
         "Type": "",
-        "Class": "BookService",
-        "MethodName": "getBooksLists",
+        "NodeName": "BookService",
+        "FunctionName": "getBooksLists",
         "StartLine": 38,
         "StartLinePosition": 34,
         "StopLine": 38,
@@ -199,8 +199,8 @@
       {
         "Package": "com.phodal.pholedge.book",
         "Type": "",
-        "Class": "BookService",
-        "MethodName": "getBookById",
+        "NodeName": "BookService",
+        "FunctionName": "getBookById",
         "StartLine": 43,
         "StartLinePosition": 34,
         "StopLine": 43,
@@ -212,7 +212,7 @@
   },
   {
     "Package": "com.phodal.pholedge.book",
-    "Class": "BookService",
+    "NodeName": "BookService",
     "Type": "Class",
     "Path": "examples/api/BookService.java",
     "Fields": [
@@ -225,7 +225,7 @@
         "Value": "bookRepository"
       }
     ],
-    "Methods": [
+    "Functions": [
       {
         "Name": "createBook",
         "Type": "String",
@@ -239,12 +239,12 @@
             "Type": "CreateBookCommand"
           }
         ],
-        "MethodCalls": [
+        "FunctionCalls": [
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "",
-            "Class": "Book",
-            "MethodName": "create",
+            "NodeName": "Book",
+            "FunctionName": "create",
             "StartLine": 26,
             "StartLinePosition": 32,
             "StopLine": 26,
@@ -253,8 +253,8 @@
           {
             "Package": "com.phodal.pholedge.book.model.command",
             "Type": "chain",
-            "Class": "CreateBookCommand",
-            "MethodName": "getIsbn",
+            "NodeName": "CreateBookCommand",
+            "FunctionName": "getIsbn",
             "StartLine": 26,
             "StartLinePosition": 47,
             "StopLine": 26,
@@ -263,8 +263,8 @@
           {
             "Package": "com.phodal.pholedge.book.model.command",
             "Type": "chain",
-            "Class": "CreateBookCommand",
-            "MethodName": "getName",
+            "NodeName": "CreateBookCommand",
+            "FunctionName": "getName",
             "StartLine": 26,
             "StartLinePosition": 66,
             "StopLine": 26,
@@ -273,8 +273,8 @@
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "",
-            "Class": "BookRepository",
-            "MethodName": "save",
+            "NodeName": "BookRepository",
+            "FunctionName": "save",
             "StartLine": 27,
             "StartLinePosition": 23,
             "StopLine": 27,
@@ -283,8 +283,8 @@
           {
             "Package": "com.phodal.pholedge.book.model",
             "Type": "chain",
-            "Class": "Book",
-            "MethodName": "getId",
+            "NodeName": "Book",
+            "FunctionName": "getId",
             "StartLine": 28,
             "StartLinePosition": 20,
             "StopLine": 28,
@@ -303,12 +303,12 @@
         "StopLine": 33,
         "StopLinePosition": 48,
         "Parameters": null,
-        "MethodCalls": [
+        "FunctionCalls": [
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "",
-            "Class": "BookRepository",
-            "MethodName": "list",
+            "NodeName": "BookRepository",
+            "FunctionName": "list",
             "StartLine": 32,
             "StartLinePosition": 30,
             "StopLine": 32,
@@ -332,12 +332,12 @@
             "Type": "String"
           }
         ],
-        "MethodCalls": [
+        "FunctionCalls": [
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "",
-            "Class": "Book",
-            "MethodName": "byId",
+            "NodeName": "Book",
+            "FunctionName": "byId",
             "StartLine": 36,
             "StartLinePosition": 35,
             "StopLine": 36,
@@ -346,8 +346,8 @@
           {
             "Package": "com.phodal.pholedge.book.model",
             "Type": "chain",
-            "Class": "Book",
-            "MethodName": "toRepresentation",
+            "NodeName": "Book",
+            "FunctionName": "toRepresentation",
             "StartLine": 37,
             "StartLinePosition": 20,
             "StopLine": 37,
@@ -375,12 +375,12 @@
             "Type": "UpdateBookCommand"
           }
         ],
-        "MethodCalls": [
+        "FunctionCalls": [
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "",
-            "Class": "Book",
-            "MethodName": "byId",
+            "NodeName": "Book",
+            "FunctionName": "byId",
             "StartLine": 41,
             "StartLinePosition": 35,
             "StopLine": 41,
@@ -389,8 +389,8 @@
           {
             "Package": "com.phodal.pholedge.book.model",
             "Type": "chain",
-            "Class": "Book",
-            "MethodName": "save",
+            "NodeName": "Book",
+            "FunctionName": "save",
             "StartLine": 42,
             "StartLinePosition": 13,
             "StopLine": 42,
@@ -399,8 +399,8 @@
           {
             "Package": "com.phodal.pholedge.book.model.command",
             "Type": "chain",
-            "Class": "UpdateBookCommand",
-            "MethodName": "getIsbn",
+            "NodeName": "UpdateBookCommand",
+            "FunctionName": "getIsbn",
             "StartLine": 42,
             "StartLinePosition": 26,
             "StopLine": 42,
@@ -409,8 +409,8 @@
           {
             "Package": "com.phodal.pholedge.book.model.command",
             "Type": "chain",
-            "Class": "UpdateBookCommand",
-            "MethodName": "getName",
+            "NodeName": "UpdateBookCommand",
+            "FunctionName": "getName",
             "StartLine": 42,
             "StartLinePosition": 45,
             "StopLine": 42,
@@ -419,8 +419,8 @@
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "",
-            "Class": "BookRepository",
-            "MethodName": "save",
+            "NodeName": "BookRepository",
+            "FunctionName": "save",
             "StartLine": 43,
             "StartLinePosition": 23,
             "StopLine": 43,
@@ -429,8 +429,8 @@
           {
             "Package": "com.phodal.pholedge.book.model",
             "Type": "chain",
-            "Class": "Book",
-            "MethodName": "toRepresentation",
+            "NodeName": "Book",
+            "FunctionName": "toRepresentation",
             "StartLine": 44,
             "StartLinePosition": 20,
             "StopLine": 44,
@@ -458,18 +458,18 @@
             "Type": "BookRepository"
           }
         ],
-        "MethodCalls": null,
+        "FunctionCalls": null,
         "Override": false,
         "Annotations": null,
         "IsConstructor": true
       }
     ],
-    "MethodCalls": [
+    "FunctionCalls": [
       {
         "Package": "com.phodal.pholedge.book",
         "Type": "",
-        "Class": "Book",
-        "MethodName": "create",
+        "NodeName": "Book",
+        "FunctionName": "create",
         "StartLine": 26,
         "StartLinePosition": 32,
         "StopLine": 26,
@@ -478,8 +478,8 @@
       {
         "Package": "com.phodal.pholedge.book.model.command",
         "Type": "chain",
-        "Class": "CreateBookCommand",
-        "MethodName": "getIsbn",
+        "NodeName": "CreateBookCommand",
+        "FunctionName": "getIsbn",
         "StartLine": 26,
         "StartLinePosition": 47,
         "StopLine": 26,
@@ -488,8 +488,8 @@
       {
         "Package": "com.phodal.pholedge.book.model.command",
         "Type": "chain",
-        "Class": "CreateBookCommand",
-        "MethodName": "getName",
+        "NodeName": "CreateBookCommand",
+        "FunctionName": "getName",
         "StartLine": 26,
         "StartLinePosition": 66,
         "StopLine": 26,
@@ -498,8 +498,8 @@
       {
         "Package": "com.phodal.pholedge.book",
         "Type": "",
-        "Class": "BookRepository",
-        "MethodName": "save",
+        "NodeName": "BookRepository",
+        "FunctionName": "save",
         "StartLine": 27,
         "StartLinePosition": 23,
         "StopLine": 27,
@@ -508,8 +508,8 @@
       {
         "Package": "com.phodal.pholedge.book.model",
         "Type": "chain",
-        "Class": "Book",
-        "MethodName": "getId",
+        "NodeName": "Book",
+        "FunctionName": "getId",
         "StartLine": 28,
         "StartLinePosition": 20,
         "StopLine": 28,
@@ -518,8 +518,8 @@
       {
         "Package": "com.phodal.pholedge.book",
         "Type": "",
-        "Class": "BookRepository",
-        "MethodName": "list",
+        "NodeName": "BookRepository",
+        "FunctionName": "list",
         "StartLine": 32,
         "StartLinePosition": 30,
         "StopLine": 32,
@@ -528,8 +528,8 @@
       {
         "Package": "com.phodal.pholedge.book",
         "Type": "",
-        "Class": "Book",
-        "MethodName": "byId",
+        "NodeName": "Book",
+        "FunctionName": "byId",
         "StartLine": 36,
         "StartLinePosition": 35,
         "StopLine": 36,
@@ -538,8 +538,8 @@
       {
         "Package": "com.phodal.pholedge.book.model",
         "Type": "chain",
-        "Class": "Book",
-        "MethodName": "toRepresentation",
+        "NodeName": "Book",
+        "FunctionName": "toRepresentation",
         "StartLine": 37,
         "StartLinePosition": 20,
         "StopLine": 37,
@@ -548,8 +548,8 @@
       {
         "Package": "com.phodal.pholedge.book",
         "Type": "",
-        "Class": "Book",
-        "MethodName": "byId",
+        "NodeName": "Book",
+        "FunctionName": "byId",
         "StartLine": 41,
         "StartLinePosition": 35,
         "StopLine": 41,
@@ -558,8 +558,8 @@
       {
         "Package": "com.phodal.pholedge.book.model",
         "Type": "chain",
-        "Class": "Book",
-        "MethodName": "save",
+        "NodeName": "Book",
+        "FunctionName": "save",
         "StartLine": 42,
         "StartLinePosition": 13,
         "StopLine": 42,
@@ -568,8 +568,8 @@
       {
         "Package": "com.phodal.pholedge.book.model.command",
         "Type": "chain",
-        "Class": "UpdateBookCommand",
-        "MethodName": "getIsbn",
+        "NodeName": "UpdateBookCommand",
+        "FunctionName": "getIsbn",
         "StartLine": 42,
         "StartLinePosition": 26,
         "StopLine": 42,
@@ -578,8 +578,8 @@
       {
         "Package": "com.phodal.pholedge.book.model.command",
         "Type": "chain",
-        "Class": "UpdateBookCommand",
-        "MethodName": "getName",
+        "NodeName": "UpdateBookCommand",
+        "FunctionName": "getName",
         "StartLine": 42,
         "StartLinePosition": 45,
         "StopLine": 42,
@@ -588,8 +588,8 @@
       {
         "Package": "com.phodal.pholedge.book",
         "Type": "",
-        "Class": "BookRepository",
-        "MethodName": "save",
+        "NodeName": "BookRepository",
+        "FunctionName": "save",
         "StartLine": 43,
         "StartLinePosition": 23,
         "StopLine": 43,
@@ -598,8 +598,8 @@
       {
         "Package": "com.phodal.pholedge.book.model",
         "Type": "chain",
-        "Class": "Book",
-        "MethodName": "toRepresentation",
+        "NodeName": "Book",
+        "FunctionName": "toRepresentation",
         "StartLine": 44,
         "StartLinePosition": 20,
         "StopLine": 44,

@@ -4,27 +4,27 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/phodal/coca/cmd/cmd_util"
 	"github.com/phodal/coca/pkg/adapter/cocafile"
-	"github.com/phodal/coca/pkg/application/analysis"
-	"github.com/phodal/coca/pkg/domain"
+	"github.com/phodal/coca/pkg/application/analysis/javaapp"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 	"path/filepath"
 	"testing"
 )
 
 func TestTbsApp_EmptyTest(t *testing.T) {
 	g := NewGomegaWithT(t)
-	codePath := "../../../_fixtures/tbs/code/EmptyTest.java"
+	codePath := "../../../_fixtures/tbs/usecases/EmptyTest.java"
 	codePath = filepath.FromSlash(codePath)
 
 	result := buildTbsResult(codePath)
 
-	g.Expect(result[0].FileName).To(Equal(filepath.FromSlash("../../../_fixtures/tbs/code/EmptyTest.java")))
+	g.Expect(result[0].FileName).To(Equal(filepath.FromSlash("../../../_fixtures/tbs/usecases/EmptyTest.java")))
 	g.Expect(result[0].Line).To(Equal(8))
 	g.Expect(result[0].Type).To(Equal("EmptyTest"))
 }
 
 func TestTbsApp_IgnoreTest(t *testing.T) {
 	g := NewGomegaWithT(t)
-	codePath := "../../../_fixtures/tbs/code/IgnoreTest.java"
+	codePath := "../../../_fixtures/tbs/usecases/IgnoreTest.java"
 	codePath = filepath.FromSlash(codePath)
 
 	result := buildTbsResult(codePath)
@@ -36,7 +36,7 @@ func TestTbsApp_IgnoreTest(t *testing.T) {
 
 func TestTbsApp_RedundantPrintTest(t *testing.T) {
 	g := NewGomegaWithT(t)
-	codePath := "../../../_fixtures/tbs/code/RedundantPrintTest.java"
+	codePath := "../../../_fixtures/tbs/usecases/RedundantPrintTest.java"
 	codePath = filepath.FromSlash(codePath)
 
 	result := buildTbsResult(codePath)
@@ -47,7 +47,7 @@ func TestTbsApp_RedundantPrintTest(t *testing.T) {
 
 func TestTbsApp_SleepyTest(t *testing.T) {
 	g := NewGomegaWithT(t)
-	codePath := "../../../_fixtures/tbs/code/SleepyTest.java"
+	codePath := "../../../_fixtures/tbs/usecases/SleepyTest.java"
 	codePath = filepath.FromSlash(codePath)
 
 	result := buildTbsResult(codePath)
@@ -58,7 +58,7 @@ func TestTbsApp_SleepyTest(t *testing.T) {
 
 func TestTbsApp_DuplicateAssertTest(t *testing.T) {
 	g := NewGomegaWithT(t)
-	codePath := "../../../_fixtures/tbs/code/DuplicateAssertTest.java"
+	codePath := "../../../_fixtures/tbs/usecases/DuplicateAssertTest.java"
 	codePath = filepath.FromSlash(codePath)
 
 	result := buildTbsResult(codePath)
@@ -70,7 +70,7 @@ func TestTbsApp_DuplicateAssertTest(t *testing.T) {
 
 func TestTbsApp_UnknownTest(t *testing.T) {
 	g := NewGomegaWithT(t)
-	codePath := "../../../_fixtures/tbs/code/UnknownTest.java"
+	codePath := "../../../_fixtures/tbs/usecases/UnknownTest.java"
 	codePath = filepath.FromSlash(codePath)
 
 	result := buildTbsResult(codePath)
@@ -82,7 +82,7 @@ func TestTbsApp_UnknownTest(t *testing.T) {
 
 func TestTbsApp_RedundantAssertionTest(t *testing.T) {
 	g := NewGomegaWithT(t)
-	codePath := "../../../_fixtures/tbs/code/RedundantAssertionTest.java"
+	codePath := "../../../_fixtures/tbs/usecases/RedundantAssertionTest.java"
 	codePath = filepath.FromSlash(codePath)
 
 	result := buildTbsResult(codePath)
@@ -139,18 +139,18 @@ func buildTbsResult(codePath string) []TestBadSmell {
 	return result
 }
 
-func BuildTestAnalysisResultsByPath(codePath string) (map[string]domain.JIdentifier, []domain.JClassNode) {
+func BuildTestAnalysisResultsByPath(codePath string) (map[string]core_domain.CodeDataStruct, []core_domain.CodeDataStruct) {
 	files := cocafile.GetJavaTestFiles(codePath)
 
 	identifiers := cmd_util.LoadTestIdentify(files)
-	identifiersMap := domain.BuildIdentifierMap(identifiers)
+	identifiersMap := core_domain.BuildIdentifierMap(identifiers)
 
 	var classes []string = nil
 	for _, node := range identifiers {
-		classes = append(classes, node.Package+"."+node.ClassName)
+		classes = append(classes, node.Package+"."+node.NodeName)
 	}
 
-	analysisApp := analysis.NewJavaFullApp()
-	classNodes := analysisApp.AnalysisFiles(identifiers, files, classes)
+	analysisApp := javaapp.NewJavaFullApp()
+	classNodes := analysisApp.AnalysisFiles(identifiers, files)
 	return identifiersMap, classNodes
 }

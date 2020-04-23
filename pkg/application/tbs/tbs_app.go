@@ -1,7 +1,7 @@
 package tbs
 
 import (
-	"github.com/phodal/coca/pkg/domain"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 	"github.com/phodal/coca/pkg/infrastructure/constants"
 )
 
@@ -19,17 +19,17 @@ type TestBadSmell struct {
 	Line        int
 }
 
-func (a TbsApp) AnalysisPath(deps []domain.JClassNode, identifiersMap map[string]domain.JIdentifier) []TestBadSmell {
+func (a TbsApp) AnalysisPath(deps []core_domain.CodeDataStruct, identifiersMap map[string]core_domain.CodeDataStruct) []TestBadSmell {
 	var results []TestBadSmell = nil
-	callMethodMap := domain.BuildCallMethodMap(deps)
+	callMethodMap := core_domain.BuildCallMethodMap(deps)
 	for _, clz := range deps {
-		for _, method := range clz.Methods {
+		for _, method := range clz.Functions {
 			if !method.IsJunitTest() {
 				continue
 			}
 
 			currentMethodCalls := updateMethodCallsForSelfCall(method, clz, callMethodMap)
-			method.MethodCalls = currentMethodCalls
+			method.FunctionCalls = currentMethodCalls
 
 			var testType = ""
 			for _, annotation := range method.Annotations {
@@ -37,12 +37,12 @@ func (a TbsApp) AnalysisPath(deps []domain.JClassNode, identifiersMap map[string
 				checkEmptyTest(clz.FilePath, annotation, &results, method, &testType)
 			}
 
-			var methodCallMap = make(map[string][]domain.JMethodCall)
+			var methodCallMap = make(map[string][]core_domain.CodeCall)
 			var hasAssert = false
 			for index, methodCall := range currentMethodCalls {
-				if methodCall.MethodName == "" {
+				if methodCall.FunctionName == "" {
 					if index == len(currentMethodCalls)-1 {
-						checkAssert(hasAssert, clz, method, &results, &testType)
+						checkAssert(hasAssert, clz.FilePath, method, &results, &testType)
 					}
 					continue
 				}
@@ -58,7 +58,7 @@ func (a TbsApp) AnalysisPath(deps []domain.JClassNode, identifiersMap map[string
 				}
 
 				if index == len(currentMethodCalls)-1 {
-					checkAssert(hasAssert, clz, method, &results, &testType)
+					checkAssert(hasAssert, clz.FilePath, method, &results, &testType)
 				}
 			}
 
@@ -69,44 +69,43 @@ func (a TbsApp) AnalysisPath(deps []domain.JClassNode, identifiersMap map[string
 	return results
 }
 
-func checkAssert(hasAssert bool, clz domain.JClassNode, method domain.JMethod, results *[]TestBadSmell, testType *string) {
+func checkAssert(hasAssert bool, filePath string, method core_domain.CodeFunction, results *[]TestBadSmell, testType *string) {
 	if !hasAssert {
 		*testType = "UnknownTest"
 		tbs := TestBadSmell{
-			FileName:    clz.FilePath,
+			FileName:    filePath,
 			Type:        *testType,
 			Description: "",
-			Line:        method.StartLine,
+			Line:        method.Position.StartLine,
 		}
 
 		*results = append(*results, tbs)
-
 	}
 }
 
-func updateMethodCallsForSelfCall(method domain.JMethod, clz domain.JClassNode, callMethodMap map[string]domain.JMethod) []domain.JMethodCall {
-	currentMethodCalls := method.MethodCalls
+func updateMethodCallsForSelfCall(method core_domain.CodeFunction, clz core_domain.CodeDataStruct, callMethodMap map[string]core_domain.CodeFunction) []core_domain.CodeCall {
+	currentMethodCalls := method.FunctionCalls
 	for _, methodCall := range currentMethodCalls {
-		if methodCall.Class == clz.Class {
+		if methodCall.NodeName == clz.NodeName {
 			jMethod := callMethodMap[methodCall.BuildFullMethodName()]
 			if jMethod.Name != "" {
-				currentMethodCalls = append(currentMethodCalls, jMethod.MethodCalls...)
+				currentMethodCalls = append(currentMethodCalls, jMethod.FunctionCalls...)
 			}
 		}
 	}
 	return currentMethodCalls
 }
 
-func checkRedundantAssertionTest(path string, call domain.JMethodCall, method domain.JMethod, results *[]TestBadSmell, testType *string) {
+func checkRedundantAssertionTest(path string, call core_domain.CodeCall, method core_domain.CodeFunction, results *[]TestBadSmell, testType *string) {
 	TWO_PARAMETERS := 2
 	if len(call.Parameters) == TWO_PARAMETERS {
-		if call.Parameters[0] == call.Parameters[1] {
+		if call.Parameters[0].TypeValue == call.Parameters[1].TypeValue {
 			*testType = "RedundantAssertionTest"
 			tbs := TestBadSmell{
 				FileName:    path,
 				Type:        *testType,
 				Description: "",
-				Line:        method.StartLine,
+				Line:        method.Position.StartLine,
 			}
 
 			*results = append(*results, tbs)
@@ -114,7 +113,7 @@ func checkRedundantAssertionTest(path string, call domain.JMethodCall, method do
 	}
 }
 
-func checkDuplicateAssertTest(clz domain.JClassNode, results *[]TestBadSmell, methodCallMap map[string][]domain.JMethodCall, method domain.JMethod, testType *string) {
+func checkDuplicateAssertTest(clz core_domain.CodeDataStruct, results *[]TestBadSmell, methodCallMap map[string][]core_domain.CodeCall, method core_domain.CodeFunction, testType *string) {
 	var isDuplicateAssert = false
 	for _, methodCall := range methodCallMap {
 		if len(methodCall) >= constants.DuplicatedAssertionLimitLength {
@@ -130,50 +129,50 @@ func checkDuplicateAssertTest(clz domain.JClassNode, results *[]TestBadSmell, me
 			FileName:    clz.FilePath,
 			Type:        *testType,
 			Description: "",
-			Line:        method.StartLine,
+			Line:        method.Position.StartLine,
 		}
 
 		*results = append(*results, tbs)
 	}
 }
 
-func checkSleepyTest(path string, method domain.JMethodCall, jMethod domain.JMethod, results *[]TestBadSmell, testType *string) {
-	if method.IsThreadSleep() {
+func checkSleepyTest(path string, call core_domain.CodeCall, jMethod core_domain.CodeFunction, results *[]TestBadSmell, testType *string) {
+	if call.IsThreadSleep() {
 		*testType = "SleepyTest"
 		tbs := TestBadSmell{
 			FileName:    path,
 			Type:        *testType,
 			Description: "",
-			Line:        method.StartLine,
+			Line:        call.Position.StartLine,
 		}
 
 		*results = append(*results, tbs)
 	}
 }
 
-func checkRedundantPrintTest(path string, mCall domain.JMethodCall, results *[]TestBadSmell, testType *string) {
+func checkRedundantPrintTest(path string, mCall core_domain.CodeCall, results *[]TestBadSmell, testType *string) {
 	if mCall.IsSystemOutput() {
 		*testType = "RedundantPrintTest"
 		tbs := TestBadSmell{
 			FileName:    path,
 			Type:        *testType,
 			Description: "",
-			Line:        mCall.StartLine,
+			Line:        mCall.Position.StartLine,
 		}
 
 		*results = append(*results, tbs)
 	}
 }
 
-func checkEmptyTest(path string, annotation domain.Annotation, results *[]TestBadSmell, method domain.JMethod, testType *string) {
+func checkEmptyTest(path string, annotation core_domain.CodeAnnotation, results *[]TestBadSmell, method core_domain.CodeFunction, testType *string) {
 	if annotation.IsTest() {
-		if len(method.MethodCalls) <= 1 {
+		if len(method.FunctionCalls) <= 1 {
 			*testType = "EmptyTest"
 			tbs := TestBadSmell{
 				FileName:    path,
 				Type:        *testType,
 				Description: "",
-				Line:        method.StartLine,
+				Line:        method.Position.StartLine,
 			}
 
 			*results = append(*results, tbs)
@@ -181,7 +180,7 @@ func checkEmptyTest(path string, annotation domain.Annotation, results *[]TestBa
 	}
 }
 
-func checkIgnoreTest(clzPath string, annotation domain.Annotation, results *[]TestBadSmell, testType *string) {
+func checkIgnoreTest(clzPath string, annotation core_domain.CodeAnnotation, results *[]TestBadSmell, testType *string) {
 	if annotation.IsIgnoreTest() {
 		*testType = "IgnoreTest"
 		tbs := TestBadSmell{

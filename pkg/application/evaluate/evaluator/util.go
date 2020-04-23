@@ -1,16 +1,16 @@
 package evaluator
 
 import (
-	"github.com/phodal/coca/pkg/domain"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 )
 
 type Util struct {
 }
 
-func (Util) Evaluate(result *EvaluateModel, node domain.JClassNode) {
+func (Util) Evaluate(result *EvaluateModel, node core_domain.CodeDataStruct) {
 
 }
 
-func (s Util) EvaluateList(evaluateModel *EvaluateModel, nodes []domain.JClassNode, nodeMap map[string]domain.JClassNode, identifiers []domain.JIdentifier) {
+func (s Util) EvaluateList(evaluateModel *EvaluateModel, nodes []core_domain.CodeDataStruct, nodeMap map[string]core_domain.CodeDataStruct, identifiers []core_domain.CodeDataStruct) {
 
 }

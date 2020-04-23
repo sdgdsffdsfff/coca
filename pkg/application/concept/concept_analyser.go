@@ -2,7 +2,7 @@ package concept
 
 import (
 	languages2 "github.com/phodal/coca/pkg/application/call/stop_words/languages"
-	"github.com/phodal/coca/pkg/domain"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 	"github.com/phodal/coca/pkg/infrastructure/constants"
 	"github.com/phodal/coca/pkg/infrastructure/string_helper"
 )
@@ -14,26 +14,25 @@ func NewConceptAnalyser() ConceptAnalyser {
 	return ConceptAnalyser{}
 }
 
-func (c ConceptAnalyser) Analysis(clzs *[]domain.JClassNode) string_helper.PairList {
+func (c ConceptAnalyser) Analysis(clzs *[]core_domain.CodeDataStruct) string_helper.PairList {
 	return buildMethodsFromDeps(*clzs)
 }
 
-func buildMethodsFromDeps(clzs []domain.JClassNode) string_helper.PairList {
+func buildMethodsFromDeps(clzs []core_domain.CodeDataStruct) string_helper.PairList {
 	var methodsName []string
 	var methodStr string
 	for _, clz := range clzs {
-		for _, method := range clz.Methods {
+		for _, method := range clz.Functions {
 			methodName := method.Name
 			methodsName = append(methodsName, methodName)
 			methodStr = methodStr + " " + methodName
 		}
 	}
 
-	words := SegmentConceptCamelcase(methodsName)
-
+	words := SegmentCamelcase(methodsName)
 	words = removeNormalWords(words)
 
-	wordCounts := string_helper.RankByWordCount(words)
+	wordCounts := string_helper.SortWord(words)
 	return wordCounts
 }
 

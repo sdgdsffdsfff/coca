@@ -5,12 +5,12 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/phodal/coca/pkg/adapter/cocafile"
 	"github.com/phodal/coca/pkg/domain/bs_domain"
-	"github.com/phodal/coca/pkg/infrastructure/ast"
-	"github.com/phodal/coca/pkg/infrastructure/ast/bs"
+	"github.com/phodal/coca/pkg/infrastructure/ast/ast_java"
+	"github.com/phodal/coca/pkg/infrastructure/ast/bs_java"
 	"path/filepath"
 )
 
-var nodeInfos []bs_domain.BsJClass
+var nodeInfos []bs_domain.BSDataStruct
 
 type BadSmellApp struct {
 }
@@ -19,7 +19,7 @@ func NewBadSmellApp() *BadSmellApp {
 	return &BadSmellApp{}
 }
 
-func (j *BadSmellApp) AnalysisPath(codeDir string) *[]bs_domain.BsJClass {
+func (j *BadSmellApp) AnalysisPath(codeDir string) *[]bs_domain.BSDataStruct {
 	nodeInfos = nil
 	files := cocafile.GetJavaFiles(codeDir)
 	for index := range files {
@@ -27,24 +27,24 @@ func (j *BadSmellApp) AnalysisPath(codeDir string) *[]bs_domain.BsJClass {
 		file := files[index]
 
 		displayName := filepath.Base(file)
-		fmt.Println("Refactoring parse java call: " + displayName)
+		fmt.Println("parse java call: " + displayName)
 
-		parser := ast.ProcessJavaFile(file)
+		parser := ast_java.ProcessJavaFile(file)
 		context := parser.CompilationUnit()
 
-		listener := bs.NewBadSmellListener()
+		listener := bs_java.NewBadSmellListener()
 
 		antlr.NewParseTreeWalker().Walk(listener, context)
 
 		nodeInfo = listener.GetNodeInfo()
-		nodeInfo.Path = file
+		nodeInfo.FilePath = file
 		nodeInfos = append(nodeInfos, nodeInfo)
 	}
 
 	return &nodeInfos
 }
 
-func (j *BadSmellApp) IdentifyBadSmell(nodeInfos *[]bs_domain.BsJClass, ignoreRules []string) []bs_domain.BadSmellModel {
+func (j *BadSmellApp) IdentifyBadSmell(nodeInfos *[]bs_domain.BSDataStruct, ignoreRules []string) []bs_domain.BadSmellModel {
 	bsList := AnalysisBadSmell(*nodeInfos)
 
 	mapIgnoreRules := make(map[string]bool)

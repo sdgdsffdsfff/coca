@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/phodal/coca/cmd/cmd_util"
 	"github.com/phodal/coca/pkg/adapter/cocafile"
-	"github.com/phodal/coca/pkg/application/analysis"
+	"github.com/phodal/coca/pkg/application/analysis/javaapp"
 	"github.com/phodal/coca/pkg/application/deps"
-	"github.com/phodal/coca/pkg/domain"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 	"github.com/spf13/cobra"
 	"path/filepath"
 )
@@ -20,7 +20,7 @@ var (
 )
 
 type DepApp interface {
-	AnalysisPath(path string, nodes []domain.JClassNode) []domain.JDependency
+	AnalysisPath(path string, nodes []core_domain.CodeDataStruct) []core_domain.CodeDependency
 }
 
 var depsCmd = &cobra.Command{
@@ -33,17 +33,11 @@ var depsCmd = &cobra.Command{
 		path, _ = filepath.Abs(path)
 		files := cocafile.GetFilesWithFilter(path, cocafile.JavaFileFilter)
 
-		identifierApp := analysis.NewJavaIdentifierApp()
+		identifierApp := javaapp.NewJavaIdentifierApp()
 		iNodes := identifierApp.AnalysisFiles(files)
 
-		var classes []string = nil
-
-		for _, node := range iNodes {
-			classes = append(classes, node.Package+"."+node.ClassName)
-		}
-
-		callApp := analysis.NewJavaFullApp()
-		classNodes := callApp.AnalysisFiles(iNodes, files, classes)
+		callApp := javaapp.NewJavaFullApp()
+		classNodes := callApp.AnalysisFiles(iNodes, files)
 
 		//app := loadPlugins()
 		app := deps.NewDepApp()

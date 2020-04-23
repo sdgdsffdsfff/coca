@@ -5,7 +5,7 @@ import (
 	"github.com/phodal/coca/cmd/cmd_util"
 	"github.com/phodal/coca/cmd/config"
 	"github.com/phodal/coca/pkg/application/count"
-	"github.com/phodal/coca/pkg/domain"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 	"github.com/phodal/coca/pkg/infrastructure/string_helper"
 	"github.com/spf13/cobra"
 	"strconv"
@@ -20,7 +20,7 @@ var (
 	countCmdConfig CountCmdConfig
 )
 
-var cparsedDeps []domain.JClassNode
+var cparsedDeps []core_domain.CodeDataStruct
 
 var countCmd = &cobra.Command{
 	Use:   "count",
@@ -34,7 +34,7 @@ var countCmd = &cobra.Command{
 
 		callMap := count.BuildCallMap(cparsedDeps)
 
-		callMapSort := string_helper.RankByWordCount(callMap)
+		callMapSort := string_helper.SortWord(callMap)
 
 		if countCmdConfig.Top > 0 {
 			callMapSort = callMapSort[:countCmdConfig.Top]

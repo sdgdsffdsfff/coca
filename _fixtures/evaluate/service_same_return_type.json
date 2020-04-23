@@ -1,7 +1,7 @@
 [
   {
     "Package": "com.phodal.pholedge.book",
-    "Class": "BookService",
+    "NodeName": "BookService",
     "Type": "Class",
     "Path": "examples/api/BookService.java",
     "Fields": [
@@ -14,10 +14,10 @@
         "Value": "bookRepository"
       }
     ],
-    "Methods": [
+    "Functions": [
       {
         "Name": "doSave",
-        "Type": "BookRepresentaion",
+        "ReturnType": "BookRepresentaion",
         "StartLine": 31,
         "StartLinePosition": 35,
         "StopLine": 33,
@@ -27,8 +27,8 @@
           {
             "Package": "com.phodal.pholedge.book",
             "Type": "same package",
-            "Class": "BookRepository",
-            "MethodName": "list",
+            "NodeName": "BookRepository",
+            "FunctionName": "list",
             "StartLine": 32,
             "StartLinePosition": 30,
             "StopLine": 32,
@@ -40,7 +40,7 @@
       },
       {
         "Name": "doUpdate",
-        "Type": "BookRepresentaion",
+        "ReturnType": "BookRepresentaion",
         "StartLine": 35,
         "StartLinePosition": 29,
         "StopLine": 38,
@@ -66,7 +66,7 @@
   },
   {
     "Package": "com.phodal.pholedge.book.model",
-    "Class": "BookRepresentaion",
+    "NodeName": "BookRepresentaion",
     "Type": "Class",
     "Path": "examples/api/model/BookRepresentaion.java",
     "Fields": [
@@ -79,7 +79,7 @@
         "Value": "name"
       }
     ],
-    "Methods": null,
+    "Functions": null,
     "MethodCalls": null,
     "Extend": "",
     "Implements": null

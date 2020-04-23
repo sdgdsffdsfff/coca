@@ -2,7 +2,7 @@ package deps
 
 import (
 	"github.com/phodal/coca/pkg/adapter/cocafile"
-	"github.com/phodal/coca/pkg/domain"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 	"path/filepath"
 	"strings"
 )
@@ -14,8 +14,8 @@ func NewDepApp() *DepAnalysisApp {
 	return &DepAnalysisApp{}
 }
 
-func (d *DepAnalysisApp) BuildImportMap(deps []domain.JClassNode) map[string]domain.JImport {
-	var impMap = make(map[string]domain.JImport)
+func (d *DepAnalysisApp) BuildImportMap(deps []core_domain.CodeDataStruct) map[string]core_domain.CodeImport {
+	var impMap = make(map[string]core_domain.CodeImport)
 	for _, clz := range deps {
 		for _, imp := range clz.Imports {
 			impMap[imp.Source] = imp
@@ -25,12 +25,12 @@ func (d *DepAnalysisApp) BuildImportMap(deps []domain.JClassNode) map[string]dom
 	return impMap
 }
 
-func (d *DepAnalysisApp) AnalysisPath(path string, nodes []domain.JClassNode) []domain.JDependency {
+func (d *DepAnalysisApp) AnalysisPath(path string, nodes []core_domain.CodeDataStruct) []core_domain.CodeDependency {
 	path, _ = filepath.Abs(path)
 	pomXmls := cocafile.GetFilesWithFilter(path, cocafile.PomXmlFilter)
 	gradleFiles := cocafile.GetFilesWithFilter(path, cocafile.BuildGradleFilter)
 
-	var mavenDeps []domain.JDependency = nil
+	var mavenDeps []core_domain.CodeDependency = nil
 	for _, pomFile := range pomXmls {
 		currentMavenDeps := AnalysisMaven(pomFile)
 		mavenDeps = append(mavenDeps, currentMavenDeps...)
@@ -52,7 +52,7 @@ func (d *DepAnalysisApp) AnalysisPath(path string, nodes []domain.JClassNode) []
 		}
 	}
 
-	var results []domain.JDependency = nil
+	var results []core_domain.CodeDependency = nil
 	for index, dep := range mavenDeps {
 		if _, ok := needRemoveMap[index]; !ok {
 			results = append(results, dep)

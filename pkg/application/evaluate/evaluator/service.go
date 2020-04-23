@@ -1,7 +1,7 @@
 package evaluator
 
 import (
-	"github.com/phodal/coca/pkg/domain"
+	"github.com/phodal/coca/pkg/domain/core_domain"
 	"github.com/phodal/coca/pkg/infrastructure/apriori"
 	"github.com/phodal/coca/pkg/infrastructure/constants"
 	"strings"
@@ -10,11 +10,11 @@ import (
 type Service struct {
 }
 
-var serviceNodeMap map[string]domain.JClassNode
+var serviceNodeMap map[string]core_domain.CodeDataStruct
 var returnTypeMap map[string][]string
-var longParameterList []domain.JMethod
+var longParameterList []core_domain.CodeFunction
 
-func (s Service) EvaluateList(evaluateModel *EvaluateModel, nodes []domain.JClassNode, nodeMap map[string]domain.JClassNode, identifiers []domain.JIdentifier) {
+func (s Service) EvaluateList(evaluateModel *EvaluateModel, nodes []core_domain.CodeDataStruct, nodeMap map[string]core_domain.CodeDataStruct, identifiers []core_domain.CodeDataStruct) {
 	serviceNodeMap = nodeMap
 	longParameterList = nil
 	returnTypeMap = make(map[string][]string)
@@ -24,17 +24,17 @@ func (s Service) EvaluateList(evaluateModel *EvaluateModel, nodes []domain.JClas
 	}
 
 	evaluateModel.ServiceSummary.ReturnTypeMap = returnTypeMap
-	findRelatedMethodParameter(evaluateModel, longParameterList)
+	findRelatedMethodParameters(evaluateModel, longParameterList)
 }
 
-func findRelatedMethodParameter(model *EvaluateModel, list []domain.JMethod) {
+func findRelatedMethodParameters(model *EvaluateModel, list []core_domain.CodeFunction) {
 	var dataset [][]string
 	for _, method := range list {
-		var methodlist []string
+		var paramTypeList []string
 		for _, param := range method.Parameters {
-			methodlist = append(methodlist, param.Type)
+			paramTypeList = append(paramTypeList, param.TypeValue)
 		}
-		dataset = append(dataset, methodlist)
+		dataset = append(dataset, paramTypeList)
 	}
 
 	var newOptions = apriori.NewOptions(0.8, 0.8, 0, 0)
@@ -49,9 +49,9 @@ func findRelatedMethodParameter(model *EvaluateModel, list []domain.JMethod) {
 	}
 }
 
-func (s Service) Evaluate(result *EvaluateModel, node domain.JClassNode) {
+func (s Service) Evaluate(result *EvaluateModel, node core_domain.CodeDataStruct) {
 	var methodNameArray [][]string
-	for _, method := range node.Methods {
+	for _, method := range node.Functions {
 		methodNameArray = append(methodNameArray, SplitCamelcase(method.Name))
 	}
 
@@ -69,7 +69,7 @@ func (s Service) Evaluate(result *EvaluateModel, node domain.JClassNode) {
 	//}
 
 	if s.enableAbstractParameters() {
-		for _, method := range node.Methods {
+		for _, method := range node.Functions {
 			PARAMETERR_LENGTH_LIMIT := 4
 			if len(method.Parameters) >= PARAMETERR_LENGTH_LIMIT {
 				longParameterList = append(longParameterList, method)
@@ -78,9 +78,9 @@ func (s Service) Evaluate(result *EvaluateModel, node domain.JClassNode) {
 	}
 
 	if s.enableSameReturnType() {
-		for _, method := range node.Methods {
+		for _, method := range node.Functions {
 			if !method.IsJavaLangReturnType() {
-				methodType := method.Type
+				methodType := method.ReturnType
 
 				if _, ok := serviceNodeMap[methodType]; ok {
 					returnTypeMap[methodType] = append(returnTypeMap[methodType], method.BuildFullMethodName(node))
